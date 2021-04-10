@@ -11,8 +11,8 @@ import numpy as np
 import io
 
 '''
-Edge Server: Verbose (original) Version
-This server will print out all of the steps for classification, sentiment analysis, etc.
+Edge Server: Non-Verbose Version
+This server will NOT # out all of the steps for classification, sentiment analysis, etc.
 '''
 
 def setContact(robotId, contact): #set robot contact state to current time
@@ -21,8 +21,6 @@ def setContact(robotId, contact): #set robot contact state to current time
 
 def getContact(robotId): #get robot latest contact state
     key = str(robotId) + "contact"
-    print("fetching id " + str(robotId))
-    print("which is " + str(r.get(key)))
     if r.get(key) == None:
         return 0.0
     return float(r.get(key))
@@ -46,14 +44,11 @@ def evaluateEvent(event = "NO_EVENT"):
         return infoList
     # no event, so check if any robot lost contact. Each time some robot checks in, we do this for all robots. 
     lost = False
-    print("Scanning events")
     for id in robotIds:
-        print("robot ids are: " + str(robotIds))
         key = str(id) + "contact"
         lastTimeSeen = getContact(id)
         if lastTimeSeen != 0.0: #robot may have not checked in yet
             currentSeen = float(time.time())
-            print(str(id) + ": no contact for " + str(currentSeen-lastTimeSeen))
             if currentSeen - lastTimeSeen > 20: #robot has been disconnected for too long
                 lost = True
                 infoList.append("LOST_CONTACT")
@@ -123,22 +118,16 @@ def processImageSentiment(environmentFeature, event):
                 pass
             else:
                 r.mset({str(environmentFeature): str(currentSentiment+1)})
-    print("evaluation is: " + str(evaluation))
     if evaluation[0] == "LOST_CONTACT":
-        print("lost contact triggered")
         id = evaluation[1]
         key = str(id) + "lastseen" 
         lastSeen = r.get(key) #get last seen object
         lastSeen = lastSeen.decode()
-        print("lastSeen is: " + str(lastSeen))
         action = ruleset["negativeRules"][evaluation[0]] #match LOST_CONTACT to desired outcome which is to avoid object
-        print("action is: " + str(action))
         if action == "SET_MAX_SENTIMENT": #in this case, we should set the max sentiment to 3 in accordance with our ruleset. Other outcomes are possible if we modify this. 
-            print("setting max sentiment of " + str(lastSeen) + "!")
             r.mset({str(lastSeen): str(maxSentiment)})
 
     newSentiment = int(r.get(environmentFeature))
-    print("final new sentiment is: " + str(newSentiment))
     if newSentiment >= 3:
         return (environmentFeature, "avoid")
     elif newSentiment > 0:
@@ -157,22 +146,16 @@ def receive():
     img = request.files['image'].read() #current environment image
     event = request.args.get('event')
     id = request.args.get('id')
-    print("event is " + str(event))
-    print("id is " + str(id))
     setContact(id, time.time()) #we've heard from this robot
     environmentFeature = identifyImage(img)[0] #use model on image
-    print("environment image identified as: " + str(environmentFeature))
     key = str(id) + "lastseen"
-    print("robot checking in: key is " + key + " and value is: " + str(environmentFeature))
-    print("contact time is: " + str(getContact(id)))
     r.mset({key: environmentFeature}) #store robot last seen image in redis
     result = processImageSentiment(environmentFeature, event)
-    print("result is: " + str(result))
     return str(result)
 
 if __name__ == '__main__':
     '''
-    Initialize the model and feature sentiment. This demonstration simply distinquishes between the 3D-printed
+    Initialize the model and feature sentiment. This demonstration simply distinquishes between the 3D-#ed
     houses (greybox), the red plastic bowl (redsphere), and the open environment (openroom or which is not a given environmental feature).
     Any number of features, of course, can be loaded, given that they exist in the model.
     '''
