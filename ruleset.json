@@ -1,0 +1,15 @@
+{
+    "negativeRules": {
+        "LOST_CONTACT": "SET_MAX_SENTIMENT",
+        "DAMAGE_DETECTED": {
+            "lastSawObject": "raise_sentiment",
+            "noObjectSeen": "proceed_towards_coordinates"
+        },
+        "clear": "none"
+    },
+    "positiveRules": {
+        "SOUND_DETECTED": {
+            "human": "proceed_towards_coordinates"
+        }
+    }
+}
