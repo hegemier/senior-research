@@ -172,12 +172,12 @@ def receive():
 
 if __name__ == '__main__':
     '''
-    Initialize the model and feature sentiment. This demonstration simply distinquishes between the 3D-printed
+    Initialize the model and feature sentiment. This demonstration simply distinguishes between the 3D-printed
     houses (greybox), the red plastic bowl (redsphere), and the open environment (openroom or which is not a given environmental feature).
     Any number of features, of course, can be loaded, given that they exist in the model.
     '''
     r = redis.Redis() #initialize Redis connection
-    identifyModel = tf.keras.models.load_model('../imagetraining/saved_modelz3/my_model')
+    identifyModel = tf.keras.models.load_model('../imagetraining/saved_model_final/my_model')
     robotIds = ['1', '2', '3'] #initialize number and IDs of robots
     for environmentFeature in ['greybox', 'redsphere', 'openroom']: #default sentiment is 0 or neutral
         r.mset({environmentFeature: "0"})
