@@ -12,7 +12,7 @@ import io
 
 '''
 Edge Server: Non-Verbose Version
-This server will NOT # out all of the steps for classification, sentiment analysis, etc.
+This server will NOT print out all of the steps for classification, sentiment analysis, etc.
 '''
 
 def setContact(robotId, contact): #set robot contact state to current time
